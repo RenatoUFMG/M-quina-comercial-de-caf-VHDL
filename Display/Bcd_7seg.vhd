@@ -1,3 +1,5 @@
+--não é o código do programa ainda
+
 LIBRARY IEEE;
 use ieee.std_logic_1164.all;
 
