@@ -17,14 +17,14 @@ begin
     process(reset, clock, tmp1, tmp2, tmp3, D, Q)
     begin
         if reset = '1' then
-            Q <= "00000000";
+            Q <= "0000";
         elsif (clock'event and clock = '1') then
             if load = '1' then
                 case D is
-                    when "01" => Q <= tmp1;
-                    when "10" => Q <= tmp2;
-                    when "11" => Q <= tmp3;
-                    when others => Q <= "00000000";
+                    when "01" => Q <= "0101";
+                    when "10" => Q <= "1010";
+                    when "11" => Q <= "1111";
+                    when others => Q <= "0000";
                 end case;
             end if;
         end if;
