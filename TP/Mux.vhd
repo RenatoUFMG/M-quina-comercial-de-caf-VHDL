@@ -6,15 +6,14 @@ entity Mux is
 	( 
 		clock: in std_logic;
 		load: in std_logic;
-      	reset: in std_logic;
-        tmp1, tmp2, tmp3: in std_logic_vector(7 downto 0);
+        	reset: in std_logic;
 		D: in std_logic_vector (1 downto 0);
-	   	Q: out std_logic_vector (7 downto 0)
+   	    Q: out std_logic_vector (3 downto 0)
 	);
 end Mux;
 architecture mux of Mux is
 begin
-    process(reset, clock, tmp1, tmp2, tmp3, D, Q)
+    process(reset, clock, D)
     begin
         if reset = '1' then
             Q <= "0000";
