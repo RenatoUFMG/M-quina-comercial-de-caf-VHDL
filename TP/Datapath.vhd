@@ -18,9 +18,6 @@ entity Datapath is
         a: in std_logic_vector ((DATA_WIDTH-1) downto 0);
         b: in std_logic_vector ((DATA_WIDTH-1) downto 0);
         c: in std_logic_vector ((DATA_WIDTH-1) downto 0);
-        valorbebida1: in std_logic_vector ((DATA_WIDTH-1) downto 0);
-        valorbebida2: in std_logic_vector ((DATA_WIDTH-1) downto 0);
-        valorbebida3: in std_logic_vector ((DATA_WIDTH-1) downto 0);
         reg_out: out std_logic_vector ((DATA_WIDTH-1) downto 0);
         reg2_out: out std_logic_vector ((DATA_WIDTH-1) downto 0);
         reg3_out: out std_logic_vector ((DATA_WIDTH-1) downto 0);
