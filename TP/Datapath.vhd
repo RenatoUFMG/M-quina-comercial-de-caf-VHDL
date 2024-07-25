@@ -98,13 +98,13 @@ begin
         port map (clock => clock, load => enter, reset => reset, D => soma4_int, Q => reg4_int);
     comparador1_inst: Comparador
         generic map (DATA_WIDTH => DATA_WIDTH)
-        port map (a => reg_int, b => valorbebida1, suficiente => comp_b1);
+        port map (a => reg_int, b => "0001", suficiente => comp_b1);
     comparador2_inst: Comparador
         generic map (DATA_WIDTH => DATA_WIDTH)
-        port map (a => reg2_int, b => valorbebida2, suficiente => comp_b2);
+        port map (a => reg2_int, b => "0010", suficiente => comp_b2);
     comparador3_inst: Comparador
         generic map (DATA_WIDTH => DATA_WIDTH)
-        port map (a => reg3_int, b => valorbebida3, suficiente => comp_b3);
+        port map (a => reg3_int, b => "0101", suficiente => comp_b3);
     display_inst: Bcd_7seg
         port map (entrada => reg_int, saida => display_int);
     display2_inst: Bcd_7seg
