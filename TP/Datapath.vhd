@@ -1,3 +1,7 @@
+-- coisas a fazer:
+--integrar o mux na parte de tempo
+--atribuir o reg4 e o somador4 no mux para terminar o tempo
+
 library ieee;
 use ieee.std_logic_1164.all;
 
@@ -77,7 +81,7 @@ begin
     somador3_inst: Somador
         generic map (DATA_WIDTH => DATA_WIDTH)
         port map (clock => clock, a => reg3_int, b => c, soma => soma3_int, reset => reset);
-	somador4_inst: Somador
+    somador4_inst: Somador
         generic map (DATA_WIDTH => DATA_WIDTH)
         port map (clock => clock, a => reg2_int, b => reg3_int, soma => soma4_int, reset => reset);
     reg_inst: Reg
