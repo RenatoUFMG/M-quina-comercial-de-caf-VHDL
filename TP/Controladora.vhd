@@ -105,7 +105,7 @@ begin
                         state <= s0;
                     end if;
                 when s13 =>
-                    state <= s12
+                    state <= s12;
             end case;
         end if;
     end process;
@@ -113,7 +113,7 @@ begin
     begin
         case state is
             when s0 =>
-                led1 <= '0';
+                led <= '0';
                 valor_disp <= (others => '0');
                 preco_disp <= (others => '0');
                 reset_componentes <= '1';
