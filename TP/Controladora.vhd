@@ -9,16 +9,19 @@ entity Controladora is
     port(
         clock, reset, enter : in std_logic;
 
-        sek_bebida : in std_logic_vector(1 downto 0);
+        sel_bebida : in std_logic_vector(1 downto 0);
         display : in std_logic_vector((DATA_WIDTH-1) downto 0);
         display2 : in std_logic_vector((DATA_WIDTH-1) downto 0);
         ficha : in std_logic;
         comp_b1, comp_b2, comp_b3 : in std_logic;
         tempof : in std_logic;
+        reg1, reg2, reg3 : in std_logic_vector((DATA_WIDTH-1) downto 0);
 
         valor_disp : out std_logic_vector((DATA_WIDTH-1) downto 0);
         preco_disp : out std_logic_vector((DATA_WIDTH-1) downto 0);
-        
+        tmp_str: out std_logic;
+        reset_componentes: out std_logic;
+        a, b, c : out std_logic;
         led : out std_logic
     );
 
@@ -104,6 +107,53 @@ begin
                 when s13 =>
                     state <= s12
             end case;
+        end if;
+    end process;
+    process (state)
+    begin
+        case state is
+            when s0 =>
+                led1 <= '0';
+                valor_disp <= (others => '0');
+                preco_disp <= (others => '0');
+                reset_componentes <= '1';
+                tmp_str <= '0';
+                a <= '0';
+                b <= '0';
+                c <= '0';
+            when s1 =>
+                reset_componentes <= '0';
+            when s2 =>
+                valor_disp <= reg1;
+                preco_disp <= "0001";
+                a <= '0';
+            when s3 =>
+                a <= '1';
+            when s4 =>
+                led <= '1';
+            when s5 =>
+                tmp_str <= '1';
+            when s6 =>
+                valor_disp <= reg2;
+                preco_disp <= "0010";
+                b <= '0';
+            when s7 =>
+                b <= '1';
+            when s8 =>
+                led <= '1';
+            when s9 =>
+                tmp_str <= '1';
+            when s10 =>
+                valor_disp <= reg3;
+                preco_disp <= "0101";
+                c <= '0';
+            when s11 =>
+                c <= '1';
+            when s12 =>
+                led <= '1';
+            when s13 =>
+                tmp_str <= '1';
 
-        end if;    
+        end case;
+    end process;
 end fsm;
