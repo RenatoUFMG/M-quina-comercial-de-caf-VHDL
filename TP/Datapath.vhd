@@ -1,119 +1,166 @@
--- coisas a fazer:
---integrar o mux na parte de tempo
---atribuir o reg4 e o somador4 no mux para terminar o tempo
-
 library ieee;
 use ieee.std_logic_1164.all;
 
 entity Datapath is
     generic
     (
-        DATA_WIDTH : natural:= 4
+        DATA_WIDTH : natural := 4
     );
     port
     (
         clock: in std_logic;
         enter: in std_logic;
+        ficha: in std_logic;
+        
         reset: in std_logic;
-        a: in std_logic_vector ((DATA_WIDTH-1) downto 0);
-        b: in std_logic_vector ((DATA_WIDTH-1) downto 0);
-        c: in std_logic_vector ((DATA_WIDTH-1) downto 0);
-        reg_out: out std_logic_vector ((DATA_WIDTH-1) downto 0);
-        reg2_out: out std_logic_vector ((DATA_WIDTH-1) downto 0);
-        reg3_out: out std_logic_vector ((DATA_WIDTH-1) downto 0);
-        reg4_out: out std_logic_vector ((DATA_WIDTH-1) downto 0);
-        soma_out: out std_logic_vector ((DATA_WIDTH-1) downto 0);
-        soma2_out: out std_logic_vector ((DATA_WIDTH-1) downto 0);
-        soma3_out: out std_logic_vector ((DATA_WIDTH-1) downto 0);
-        soma4_out: out std_logic_vector ((DATA_WIDTH-1) downto 0);
-        comp_b1: out std_logic;
-        comp_b2: out std_logic;
-        comp_b3: out std_logic;
-        display_out: out std_logic_vector (6 downto 0)
-    );
+        load1, load2, load3: in std_logic;
+        start: in std_logic;
+
+        suficiente_valor, suficiente_tempo: out std_logic;
+        display_fichas, display_valor: out std_logic_vector(6 downto 0)
+
+    );  
 end Datapath;
 
 architecture RTL of Datapath is
     component Somador
         generic (DATA_WIDTH : natural);
-        port (clock: in std_logic; a: in std_logic_vector ((DATA_WIDTH-1) downto 0); 
-              b: in std_logic_vector ((DATA_WIDTH-1) downto 0); soma: out std_logic_vector ((DATA_WIDTH-1) downto 0);
-              reset : in std_logic);
+        port(
+            clock: in std_logic;
+            a: in std_logic_vector ((DATA_WIDTH-1) downto 0); 
+            b: in std_logic_vector ((DATA_WIDTH-1) downto 0);
+			load: in std_logic;
+            soma: out std_logic_vector ((DATA_WIDTH-1) downto 0);
+            reset : in std_logic
+			);
     end component;
 
     component Reg
         generic (DATA_WIDTH : natural);
-        port (clock: in std_logic; load: in std_logic; reset: in std_logic;
-              D: in std_logic_vector ((DATA_WIDTH-1) downto 0); Q: out std_logic_vector ((DATA_WIDTH-1) downto 0));
+        port(
+            clock: in std_logic;
+            load: in std_logic;
+            reset: in std_logic;
+            D: in std_logic_vector ((DATA_WIDTH-1) downto 0);
+            Q: out std_logic_vector ((DATA_WIDTH-1) downto 0)
+        );
     end component;
 
     component Comparador
         generic (DATA_WIDTH : natural);
-        port (a: in std_logic_vector ((DATA_WIDTH-1) downto 0); 
-              b: in std_logic_vector ((DATA_WIDTH-1) downto 0); suficiente: out std_logic);
+        port(
+            a: in std_logic_vector ((DATA_WIDTH-1) downto 0); 
+            b: in std_logic_vector ((DATA_WIDTH-1) downto 0);
+            clock: in std_logic;
+            suficiente: out std_logic
+        );
     end component;
 
     component Bcd_7seg
-        port (entrada : in std_logic_vector (3 downto 0);
-              saida : out std_logic_vector (6 downto 0));
+        port(
+            entrada : in std_logic_vector (3 downto 0);
+            saida : out std_logic_vector (6 downto 0)
+        );
+    end component;
+    component Contador
+        port(
+            clock : in std_logic; 
+            reset : in std_logic;
+            start : in std_logic;
+            tempo_in : in std_logic_vector(3 downto 0);
+            tempo_out : out std_logic
+        );
     end component;
 
-    signal soma_int: std_logic_vector ((DATA_WIDTH-1) downto 0);
-    signal reg_int: std_logic_vector ((DATA_WIDTH-1) downto 0);
-    signal reg2_int: std_logic_vector ((DATA_WIDTH-1) downto 0);
-    signal reg3_int: std_logic_vector ((DATA_WIDTH-1) downto 0);
-    signal reg4_int: std_logic_vector ((DATA_WIDTH-1) downto 0);
-    signal soma2_int: std_logic_vector ((DATA_WIDTH-1) downto 0);
-    signal soma3_int: std_logic_vector ((DATA_WIDTH-1) downto 0);
-    signal soma4_int: std_logic_vector ((DATA_WIDTH-1) downto 0);
-    signal display_int: std_logic_vector (6 downto 0);
-	 signal display2_int: std_logic_vector (6 downto 0);
-begin
-    somador_inst: Somador
-        generic map (DATA_WIDTH => DATA_WIDTH)
-        port map (clock => clock, a => reg_int, b => a, soma => soma_int, reset => reset);
-    somador2_inst: Somador
-        generic map (DATA_WIDTH => DATA_WIDTH)
-        port map (clock => clock, a => reg2_int, b => b, soma => soma2_int, reset => reset);
-    somador3_inst: Somador
-        generic map (DATA_WIDTH => DATA_WIDTH)
-        port map (clock => clock, a => reg3_int, b => c, soma => soma3_int, reset => reset);
-    somador4_inst: Somador
-        generic map (DATA_WIDTH => DATA_WIDTH)
-        port map (clock => clock, a => reg2_int, b => reg3_int, soma => soma4_int, reset => reset);
-    reg_inst: Reg
-        generic map (DATA_WIDTH => DATA_WIDTH)
-        port map (clock => clock, load => enter, reset => reset, D => soma_int, Q => reg_int);
-    reg2_inst: Reg
-        generic map (DATA_WIDTH => DATA_WIDTH)
-        port map (clock => clock, load => enter, reset => reset, D => soma2_int, Q => reg2_int);
-    reg3_inst: Reg
-        generic map (DATA_WIDTH => DATA_WIDTH)
-        port map (clock => clock, load => enter, reset => reset, D => soma3_int, Q => reg3_int);
-    reg4_inst: Reg
-        generic map (DATA_WIDTH => DATA_WIDTH)
-        port map (clock => clock, load => enter, reset => reset, D => soma4_int, Q => reg4_int);
-    comparador1_inst: Comparador
-        generic map (DATA_WIDTH => DATA_WIDTH)
-        port map (a => reg_int, b => "0001", suficiente => comp_b1);
-    comparador2_inst: Comparador
-        generic map (DATA_WIDTH => DATA_WIDTH)
-        port map (a => reg2_int, b => "0010", suficiente => comp_b2);
-    comparador3_inst: Comparador
-        generic map (DATA_WIDTH => DATA_WIDTH)
-        port map (a => reg3_int, b => "0101", suficiente => comp_b3);
-    display_inst: Bcd_7seg
-        port map (entrada => reg_int, saida => display_int);
-    display2_inst: Bcd_7seg
-        port map (entrada => reg_int, saida => display2_int);
+    component DivisorClock
+        port(
+            clk50MHz: in std_logic;
+            reset: in std_logic;
+            clk1Hz: out std_logic
+        );
+    end component;
+    
+    component Seletor
+		  generic(DATA_WIDTH : natural);
+        port(
+            entrada1, entrada2, entrada3 : in std_logic_vector((DATA_WIDTH-1)downto 0);
+            sel1, sel2, sel3 : in std_logic;
+            saida : out std_logic_vector((DATA_WIDTH-1)downto 0)
+        );
+    end component;
 
-    soma_out <= soma_int;
-    reg_out <= reg_int;
-    reg2_out <= reg2_int;
-    reg3_out <= reg3_int;
-    reg4_out <= reg4_int;
-    soma2_out <= soma2_int;
-    soma3_out <= soma3_int;
-    soma4_out <= soma4_int;
-    display_out <= display_int;
+--declaraÃ§Ã£o de sinais:
+    signal valor1, valor2, valor3, tempo1, tempo2, tempo3: std_logic_vector((DATA_WIDTH-1)downto 0);
+    signal valorsel, temposel: std_logic_vector((DATA_WIDTH-1)downto 0);
+    signal somafichas, fichas: std_logic_vector((DATA_WIDTH-1)downto 0);
+    signal clock_1mhz: std_logic;
+
+begin
+--instanciando os componentes:
+
+    --fase 0 - Divisor de clock:
+    inst_divisor: DivisorClock
+    port map(clk50MHz => clock, reset => reset, clk1Hz => clock_1mhz);
+
+    --fase1 - valores e fichas:
+    inst_regv1: Reg
+    generic map (DATA_WIDTH => 4)
+    port map (clock => clock_1mhz, load => load1, reset => reset, D => "0001", Q => valor1);
+
+    inst_regv2: Reg
+    generic map (DATA_WIDTH => 4)
+    port map (clock => clock_1mhz, load => load2, reset => reset, D => "0010", Q => valor2);
+
+    inst_regv3: Reg
+    generic map (DATA_WIDTH => 4)
+    port map (clock => clock_1mhz, load => load3, reset => reset, D => "0101", Q => valor3);
+
+    inst_selvalor: Seletor
+	 generic map (DATA_WIDTH => 4)
+    port map (entrada1 => valor1, entrada2 => valor2, entrada3 => valor3,
+    sel1 => load1, sel2 => load2, sel3 => load3, saida => valorsel);
+
+    inst_regficha: Reg
+    generic map (DATA_WIDTH => 4)
+    port map (clock => clock_1mhz, load => enter, reset => reset, D => somafichas, Q=> fichas);
+
+    inst_somador_fichas: Somador
+    generic map (DATA_WIDTH => 4)
+    port map (clock => clock_1mhz, load => ficha, reset => reset, a => fichas, b => "0001", soma => somafichas);
+
+    inst_comp_fichas: Comparador
+    generic map (DATA_WIDTH => 4)
+    port map (a => fichas, b => valorsel, clock => clock_1mhz, suficiente => suficiente_valor);
+
+    inst_display_fichas: Bcd_7seg
+    port map (entrada => fichas, saida => display_fichas);
+
+    inst_display_valor: Bcd_7seg
+    port map(entrada => valorsel, saida => display_valor);
+    
+    --fase 2 - tempo de preparo
+    inst_regt1: Reg
+    generic map (DATA_WIDTH => 4)
+    port map (clock => clock_1mhz, load => load1, reset => reset, D => "0101", Q => tempo1);
+
+    inst_regt2: Reg
+    generic map (DATA_WIDTH => 4)
+    port map (clock => clock_1mhz, load => load2, reset => reset, D => "1010", Q => tempo2);
+
+    inst_regt3: Reg
+    generic map (DATA_WIDTH => 4)
+    port map (clock => clock_1mhz, load => load3, reset => reset, D => "1111", Q => tempo3);
+
+    inst_seltempo: Seletor
+	 generic map (DATA_WIDTH => 4)
+    port map (entrada1 => tempo1, entrada2 => tempo2, entrada3 => tempo3,
+    sel1 => load1, sel2 => load2, sel3 => load3, saida => temposel);
+
+    inst_count: Contador
+    port map (clock => clock_1mhz, start => start, reset => reset, tempo_in => temposel, tempo_out => suficiente_tempo);
+    
+    
+
 end RTL;
+
+
