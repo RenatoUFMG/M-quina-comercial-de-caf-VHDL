@@ -8,25 +8,28 @@ entity Contador is
         reset : in std_logic;
         start : in std_logic;
         tempo_in : in std_logic_vector(3 downto 0);
-        tempo_out : out std_logic_vector(3 downto 0)
+        tempo_out : out std_logic
     );
 end Contador;
 
 architecture timer of Contador is
-    signal tempo : std_logic_vector(3 downto 0) := "0000";
+    signal tempo : integer := 0;
 begin
     process(clock, reset)
     begin
         if reset = '1' then
-            tempo <= "0000";
+            tempo <= 0;
+				tempo_out <= '0';
         elsif rising_edge(clock) then
             if start = '1' then
-                tempo <= std_logic_vector(unsigned(tempo) + 1);
-            elsif start = '0' then
-                tempo <= tempo_in;
+                if tempo < unsigned(tempo_in) then
+                    tempo <= tempo + 1;
+                    tempo_out <= '0';
+                else
+                    tempo_out <= '1';
+                end if;
             end if;
         end if;
     end process;
 
-    tempo_out <= tempo when rising_edge(clock);
 end timer;
