@@ -8,10 +8,10 @@ entity Processador is
         enter: in std_logic;
         reset: in std_logic;
         ficha: in std_logic;
-        selecao_bebida : in std_logic_vector(1 downto 0);
+        btbeb1, btbeb2, btbeb3 : in std_logic;
 
         display1_out: out std_logic_vector (6 downto 0);
-		  display2_out: out std_logic_vector (6 downto 0);
+		display2_out: out std_logic_vector (6 downto 0);
         led : out std_logic
     );
 end Processador;
@@ -24,95 +24,73 @@ architecture rtl of Processador is
         port(
             clock: in std_logic;
             enter: in std_logic;
+            ficha: in std_logic;
             reset: in std_logic;
-            sel_bebida : in std_logic_vector(1 downto 0);
-            a, b, c: in std_logic_vector((DATA_WIDTH-1)downto 0);
-            tmp_str: in std_logic;
-            tempofinal: out std_logic;
-
-            reg_out, reg2_out, reg3_out, reg4_out: out std_logic_vector((DATA_WIDTH-1)downto 0);
-            soma_out, soma2_out, soma3_out, soma4_out: out std_logic_vector((DATA_WIDTH-1)downto 0);
-            comp_b1, comp_b2, comp_b3: out std_logic;
-            display_out, display2_out: out std_logic_vector (6 downto 0)
+            load1, load2, load3: in std_logic;
+            start: in std_logic;
+    
+            suficiente_valor, suficiente_tempo: out std_logic;
+            display_fichas, display_valor: out std_logic_vector(6 downto 0)
         );
     end component;
 
     component Controladora
-        generic(
-            DATA_WIDTH : natural := 4
-        );
         port(
-            clock, reset, enter: in std_logic;
-            sel_bebida : in std_logic_vector(1 downto 0);
-            comp_b1, comp_b2, comp_b3: in std_logic;
-            regvalor: in std_logic_vector(6 downto 0);
-            tempof: in std_logic;
+            clock, reset, enter : in std_logic;
+            btbeb1, btbeb2, btbeb3 : in std_logic;
+            temposuficiente, valorsuficiente: in std_logic;
             ficha : in std_logic;
-
-            valor_disp, preco_disp: out std_logic_vector(6 downto 0);
-            a, b, c: out std_logic_vector((DATA_WIDTH-1)downto 0);
-            tmp_str: out std_logic;
-            led: out std_logic;
+              
+            
+            ficha_out : out std_logic;
+            start, led: out std_logic;
+            load1, load2, load3 : out std_logic;
             reset_componentes: out std_logic
         );
     end component;
 
-	 signal resetar: std_logic;
-	signal a, b, c : std_logic_vector((DATA_WIDTH-1) downto 0);
-	signal reg_1, reg_2, reg_3 : std_logic_vector(6 downto 0);
-	signal reg_1d, reg_2d, reg_3d : std_logic_vector((DATA_WIDTH-1) downto 0);
-	signal soma1, soma2, soma3 : std_logic_vector((DATA_WIDTH-1)downto 0);
-    signal comp1, comp2, comp3 : std_logic;
-    signal starttempo, tempo : std_logic;
-    signal display1, display2 : std_logic_vector(6 downto 0);
+	 signal tmpsuficiente, vlrsuficiente: std_logic;
+    signal ficha_out: std_logic;
+    signal loads1, loads2, loads3: std_logic;
+    signal starttmp: std_logic;
+	 signal clear:std_logic;
 	 
-	 begin
+begin
 	 
-inst_controladora : Controladora
-    generic map (DATA_WIDTH => DATA_WIDTH)
+    inst_controladora : Controladora
     port map (
         clock => clock,
         reset => reset,
         enter => enter,
-        sel_bebida => selecao_bebida,
+        btbeb1 => btbeb1,
+        btbeb2 => btbeb2,
+        btbeb3 => btbeb3,
+        temposuficiente => tmpsuficiente,
+        valorsuficiente => vlrsuficiente,
         ficha => ficha,
-        comp_b1 => comp1,
-        comp_b2 => comp2,
-        comp_b3 => comp3,
-        regvalor => display1,
-        tempof => tempo,
-        valor_disp => display1_out,
-        preco_disp => display2_out,
-        tmp_str => starttempo,
-        reset_componentes => resetar,
-        a => a,
-        b => b,
-        c => c,
-        led => led
+        ficha_out => ficha_out,
+        start => starttmp,
+        led => led,
+        load1 => loads1,
+        load2 => loads2,
+        load3 => loads3,
+        reset_componentes => clear
     );
 
-inst_datapath : Datapath
+    inst_datapath : Datapath
     generic map (DATA_WIDTH => DATA_WIDTH)
     port map (
         clock => clock,
         enter => enter,
-        reset => reset,
-        sel_bebida => selecao_bebida,
-        a => a,
-        b => b,
-        c => c,
-        tmp_str => starttempo,
-        tempofinal => tempo,
-        reg_out => reg_1d,
-        reg2_out => reg_2d,
-        reg3_out => reg_3d,
-        soma_out => soma1,
-        soma2_out => soma2,
-        soma3_out => soma3,
-        comp_b1 => comp1,
-        comp_b2 => comp2,
-        comp_b3 => comp3,
-        display_out => display1,
-		  display2_out => display2
+        reset => clear,
+        ficha => ficha_out,
+        load1 => loads1,
+        load2 => loads2,
+        load3 => loads3,
+        start => starttmp,
+        suficiente_valor => vlrsuficiente,
+        suficiente_tempo => tmpsuficiente,
+        display_fichas => display1_out,
+        display_valor => display2_out
     );
 end rtl;
