@@ -11,7 +11,7 @@ entity Reg is
 	( 
 		clock: in std_logic;
 		load: in std_logic;
-      	reset: in std_logic;
+      		reset: in std_logic;
 		D: in std_logic_vector ((DATA_WIDTH-1) downto 0);
 	   	Q: out std_logic_vector ((DATA_WIDTH-1) downto 0)
 	);
