@@ -3,32 +3,23 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 entity Controladora is
-    generic(
-        DATA_WIDTH : natural := 4
-    );
     port(
         clock, reset, enter : in std_logic;
-
-        sel_bebida : in std_logic_vector(1 downto 0);
-        display : in std_logic_vector((DATA_WIDTH-1) downto 0);
-        display2 : in std_logic_vector((DATA_WIDTH-1) downto 0);
+        btbeb1, btbeb2, btbeb3 : in std_logic;
+        temposuficiente, valorsuficiente: in std_logic;
         ficha : in std_logic;
-        comp_b1, comp_b2, comp_b3 : in std_logic;
-        tempof : in std_logic;
-        reg1, reg2, reg3 : in std_logic_vector((DATA_WIDTH-1) downto 0);
-
-        valor_disp : out std_logic_vector((DATA_WIDTH-1) downto 0);
-        preco_disp : out std_logic_vector((DATA_WIDTH-1) downto 0);
-        tmp_str: out std_logic;
-        reset_componentes: out std_logic;
-        a, b, c : out std_logic;
-        led : out std_logic
+		  
+        
+        ficha_out : out std_logic;
+        start, led: out std_logic;
+        load1, load2, load3 : out std_logic;
+        reset_componentes: out std_logic
     );
 
 end Controladora;
 architecture fsm of Controladora is
 
-    type states is (s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13);
+    type states is (s0, s1, s2, s3, s4);
     signal state : states;
 
 begin
@@ -41,71 +32,38 @@ begin
                 when s0 =>
                     state <= s1;
                 when s1 =>
-                    if enter = '1' then
-                        if (sel_bebida = "01") then
-                            state <= s2;
-                        elsif (sel_bebida = "10") then
-                            state <= s6;
-                        elsif (sel_bebida = "11") then
-                            state <= s10;
-                        elsif (sel_bebida = "00") then
-                            state <= s1;
-                        end if;
-                    end if;
+                    if btbeb1 = '0' or btbeb2 = '0' or btbeb1 = '0' then
+						if btbeb1 = '0' then
+                            load1 <= '1';
+                            load2 <= '0';
+                            load3 <= '0';
+                        elsif btbeb2 = '0' then
+                            load1 <= '0';
+                            load2 <= '1';
+                            load3 <= '0';
+                        elsif btbeb3 = '0' then
+                            load1 <= '0';
+                            load2 <= '0';
+                            load3 <= '1';
+						end if;
+                        state <= s2;
+					end if;
                 when s2 =>
                     if ficha = '1' then
                         state <= s3;
-                    elsif comp_b1 = '1' then
+                    elsif valorsuficiente = '1' then
                         state <= s4;
                     end if;
                 when s3 =>
-                    if enter = '1' then
+                    if enter = '0' then
                         state <= s2;
                     end if;
                 when s4 =>
-                    if tempof = '0' then
-                        state <= s5;
-                    elsif tempof = '1' then
+                    if temposuficiente = '1' then
                         state <= s0;
+                    else
+                        state <= s4;
                     end if;
-                when s5=>
-                    state <= s4;
-                when s6 =>
-                    if ficha = '1' then
-                        state <= s7;
-                    elsif comp_b2 = '1' then
-                        state <= s8;
-                    end if;
-                when s7 =>
-                    if enter = '1' then
-                        state <= s6;
-                    end if;
-                when s8 => 
-                    if tempof = '0' then
-                        state <= s9;
-                    elsif tempof = '1' then
-                        state <= s0;
-                    end if;
-                when s9 =>
-                    state <= s8;
-                when s10 =>
-                    if ficha = '1' then
-                        state <= s11;
-                    elsif comp_b3 = '1' then
-                        state <= s12;
-                    end if;
-                when s11 =>
-                    if enter = '1' then
-                        state <= s10;
-                    end if;
-                when s12 =>
-                    if tempof = '0' then
-                        state <= s13;
-                    elsif tempof = '1' then
-                        state <= s0;
-                    end if;
-                when s13 =>
-                    state <= s12;
             end case;
         end if;
     end process;
@@ -113,46 +71,32 @@ begin
     begin
         case state is
             when s0 =>
+                start <= '0';
                 led <= '0';
-                valor_disp <= (others => '0');
-                preco_disp <= (others => '0');
+                ficha_out <= '0';
                 reset_componentes <= '1';
-                tmp_str <= '0';
-                a <= '0';
-                b <= '0';
-                c <= '0';
             when s1 =>
+                start <= '0';
+                led <= '0';
+                ficha_out <= '0';
                 reset_componentes <= '0';
             when s2 =>
-                valor_disp <= reg1;
-                preco_disp <= "0001";
-                a <= '0';
+                start <= '0';
+                led <= '0';
+                ficha_out <= '0';
+                reset_componentes <= '0';
             when s3 =>
-                a <= '1';
+                start <= '0';
+                led <= '0';
+                ficha_out <= '1';
+                reset_componentes <= '0';
             when s4 =>
+                start <= '1';
                 led <= '1';
-            when s5 =>
-                tmp_str <= '1';
-            when s6 =>
-                valor_disp <= reg2;
-                preco_disp <= "0010";
-                b <= '0';
-            when s7 =>
-                b <= '1';
-            when s8 =>
-                led <= '1';
-            when s9 =>
-                tmp_str <= '1';
-            when s10 =>
-                valor_disp <= reg3;
-                preco_disp <= "0101";
-                c <= '0';
-            when s11 =>
-                c <= '1';
-            when s12 =>
-                led <= '1';
-            when s13 =>
-                tmp_str <= '1';
+                ficha_out <= '0';
+                reset_componentes <= '0';
+                
+
 
         end case;
     end process;
