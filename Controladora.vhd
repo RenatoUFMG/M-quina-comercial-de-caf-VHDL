@@ -8,8 +8,7 @@ entity Controladora is
         btbeb1, btbeb2, btbeb3 : in std_logic;
         temposuficiente, valorsuficiente: in std_logic;
         ficha : in std_logic;
-		  
-        
+		
         ficha_out : out std_logic;
         start, led: out std_logic;
         load1, load2, load3 : out std_logic;
@@ -27,7 +26,7 @@ begin
     begin
         if reset = '1' then
             state <= s0;
-				load1 <= '0';
+			load1 <= '0';
             load2 <= '0';
             load3 <= '0';
         elsif (rising_edge(clock)) then
@@ -36,23 +35,23 @@ begin
                     state <= s1;
                 when s1 =>
                     if btbeb1 = '1' or btbeb2 = '1' or btbeb3 = '1' then
-								if btbeb1 = '1' and enter = '1' then
+						if btbeb1 = '1' and enter = '1' then
                             load1 <= '1';
                             load2 <= '0';
                             load3 <= '0';
-									 state <= s2;
+							state <= s2;
                         elsif btbeb2 = '1' and enter = '1' then
                             load1 <= '0';
                             load2 <= '1';
                             load3 <= '0';
-									 state <= s2;
+							state <= s2;
                         elsif btbeb3 = '1' and enter = '1' then
                             load1 <= '0';
                             load2 <= '0';
                             load3 <= '1';
-									 state <= s2;
-								end if;
-						   end if;
+							state <= s2;
+						end if;
+					end if;
                 when s2 =>
                      if valorsuficiente = '1' then
                         state <= s4;
@@ -65,9 +64,9 @@ begin
                     end if;
                 when s4 =>
                     if temposuficiente = '1' then
-								load1 <= '0';
+						load1 <= '0';
                         load2 <= '0';
-                         load3 <= '0';
+                        load3 <= '0';
                         state <= s0;
                     end if;
             end case;
@@ -101,9 +100,6 @@ begin
                 led <= '1';
                 ficha_out <= '0';
                 reset_componentes <= '0';
-                
-
-
         end case;
     end process;
 end fsm;
