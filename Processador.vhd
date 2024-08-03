@@ -41,7 +41,6 @@ architecture rtl of Processador is
             temposuficiente, valorsuficiente: in std_logic;
             ficha : in std_logic;
               
-            
             ficha_out : out std_logic;
             start, led: out std_logic;
             load1, load2, load3 : out std_logic;
@@ -49,14 +48,13 @@ architecture rtl of Processador is
         );
     end component;
 
-	 signal tmpsuficiente, vlrsuficiente: std_logic;
+	signal tmpsuficiente, vlrsuficiente: std_logic;
     signal ficha_out: std_logic;
     signal loads1, loads2, loads3: std_logic;
     signal starttmp: std_logic;
-	 signal clear:std_logic;
+	signal clear: std_logic;
 	 
 begin
-	 
     inst_controladora : Controladora
     port map (
         clock => clock,
