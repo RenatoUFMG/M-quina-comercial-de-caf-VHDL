@@ -3,12 +3,10 @@
 	use ieee.numeric_std.all;
 
 	entity comparador is
-		
 		generic
 		(
 			DATA_WIDTH: natural := 4
 		);
-		
 		port
 		(
 			a: in std_logic_vector ((DATA_WIDTH-1) downto 0);
@@ -17,7 +15,6 @@
 			clock: in std_logic;
 			reset: in std_logic
 		);
-		
 	end comparador;
 
 	architecture comp of comparador is
